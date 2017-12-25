@@ -14,7 +14,7 @@
 ## Introduction
 A tool helps to query words in a faster way.
 
-![demo](https://raw.githubusercontent.com/lzl1918/QuickDictionary/master/capture.png)
+![demo](https://raw.githubusercontent.com/lzl1918/QuickDictionary/master//capture.png)
 
 ## Acknowledgement
 Thanks [@Jonathan LEI](https://www.zhihu.com/people/xJonathan) for his [APIs](https://zhuanlan.zhihu.com/p/22421123) to access Bing dictonary.
