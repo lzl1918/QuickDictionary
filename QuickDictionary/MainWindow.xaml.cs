@@ -44,7 +44,13 @@ namespace QuickDictionary
             wordHighlightedBrush = Resources["SentenceHighlightForeground"] as SolidColorBrush;
 
             Loaded += OnLoaded;
+            Closing += OnClosing;
             MouseDown += OnMouseDown;
+        }
+
+        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ClipboardHelper.RemoveClipboardFormatListener(hwnd);
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -63,7 +69,16 @@ namespace QuickDictionary
         {
             hwnd = new WindowInteropHelper(this).Handle;
             GlassHelper.EnableAero(hwnd);
+            HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
+            source.AddHook(WndProc);
+            ClipboardHelper.AddClipboardFormatListener(hwnd);
 
+            double x1 = SystemParameters.PrimaryScreenWidth;
+            double y1 = SystemParameters.PrimaryScreenHeight;
+            double left = x1 - 20 - ActualWidth;
+            double top = SystemParameters.WorkArea.Top + 20;
+            this.Left = left;
+            this.Top = top;
             RetriveWordInformation("test");
         }
 
@@ -285,9 +300,34 @@ namespace QuickDictionary
         private bool IsSupportedCharacterForWord(char ch)
         {
             if (char.IsLetterOrDigit(ch)) return true;
-            if (ch == '\'') return true;
             if (ch == '.') return true;
             return false;
+            if (ch == '\'') return true;
+            return false;
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (handled)
+                return IntPtr.Zero;
+            switch (msg)
+            {
+                case ClipboardHelper.WM_CLIPBOARDUPDATE:
+                    {
+                        if (Clipboard.ContainsText())
+                        {
+                            string str = Clipboard.GetText();
+                            str = str.Trim();
+                            if (!string.IsNullOrWhiteSpace(str) && ShouldQueryWord(str))
+                            {
+                                inputWord.Text = str;
+                                RetriveWordInformation(str);
+                            }
+                        }
+                        break;
+                    }
+            }
+            return IntPtr.Zero;
         }
     }
 }

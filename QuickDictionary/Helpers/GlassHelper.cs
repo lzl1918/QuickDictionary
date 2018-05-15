@@ -38,7 +38,7 @@ namespace QuickDictionary.Helpers
         WCA_ACCENT_POLICY = 19
     }
 
-    public class GlassHelper
+    public static class GlassHelper
     {
         [DllImport("user32.dll")]
         public static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
